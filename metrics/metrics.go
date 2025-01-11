@@ -62,7 +62,7 @@ func Init(addr string) *Server {
 			Help: "Number of targets that doesn't respond to pings.",
 		}),
 		UnexpectedPorts: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "scanexporter_unexpected_open_ports_total",
+			Name: "scanexporter_unexpected_open_port",
 			Help: "Number of ports that are open, and shouldn't be.",
 		}, []string{"name", "ip", "port", "owner"}),
 		OpenPorts: prometheus.NewGaugeVec(prometheus.GaugeOpts{
