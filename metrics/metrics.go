@@ -64,7 +64,7 @@ func Init(addr string) *Server {
 		UnexpectedPorts: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "scanexporter_unexpected_open_ports_total",
 			Help: "Number of ports that are open, and shouldn't be.",
-		}, []string{"name", "ip", "owner"}),
+		}, []string{"name", "ip", "port", "owner"}),
 		OpenPorts: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "scanexporter_open_ports_total",
 			Help: "Number of ports that are open.",
@@ -141,10 +141,12 @@ func (s *Server) Updater(metChan chan NewMetrics, pingChan chan PingInfo, pendin
 			// If the port is open but not expected
 			for _, port := range nm.Open {
 				if !common.StringInSlice(port, nm.Expected) {
+					labels["port"] = port
+					s.UnexpectedPorts.With(labels).Set(float64(1))
+
 					unexpectedPorts = append(unexpectedPorts, port)
 				}
 			}
-			s.UnexpectedPorts.With(labels).Set(float64(len(unexpectedPorts)))
 			if len(unexpectedPorts) > 0 {
 				log.Warn().Str("name", nm.Name).Str("ip", nm.IP).Msgf("%s (%s) unexpected open ports: %s", nm.Name, nm.IP, unexpectedPorts)
 			} else {
@@ -152,6 +154,7 @@ func (s *Server) Updater(metChan chan NewMetrics, pingChan chan PingInfo, pendin
 			}
 
 			unexpectedPorts = nil
+			delete(labels, "port")
 
 			// If the port is expected but not open
 			for _, port := range nm.Expected {
