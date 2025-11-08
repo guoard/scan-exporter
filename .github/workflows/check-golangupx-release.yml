@@ -8,6 +8,8 @@ on:
 
 jobs:
   check-golang-version:
+    permissions:
+      workflows: write
     runs-on: ubuntu-latest
     outputs:
       new-version: ${{ steps.check.outputs.new-version }}
@@ -76,7 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
