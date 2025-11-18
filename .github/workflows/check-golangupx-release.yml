@@ -2,14 +2,12 @@ name: Check for new Golang upx releases
 
 on:
   schedule:
-    # Run every 24 hours
-    - cron: '0 0 * * *'
+    # Run every sunday
+    - cron: '0 0 * * 0'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   check-golang-version:
-    permissions:
-      workflows: write
     runs-on: ubuntu-latest
     outputs:
       new-version: ${{ steps.check.outputs.new-version }}
@@ -82,7 +80,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Update Dockerfile
         run: |
